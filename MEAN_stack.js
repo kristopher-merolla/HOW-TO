@@ -416,9 +416,9 @@
 		sudo mongod
 			// this starts up our mongo database (assuming we're using that!)
 
-///////////////////
-// Y) Deployment //
-///////////////////
+///////////////////////
+// Y) Deployment AWS //
+///////////////////////
 	// Make sure you have removed /dist from gitignore
 	// Change serverpaths to remove "localhost://"
 	// On the AWS site (in EC2) click:

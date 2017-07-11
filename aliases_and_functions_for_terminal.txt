@@ -1,0 +1,41 @@
+function unchained () {
+	django-admin startproject $1
+	cd $1
+	mkdir apps
+	cd apps
+	touch __init__.py
+	python ../manage.py startapp $2
+	cd $2
+	touch urls.py
+	mkdir templates
+	mkdir templates/$2
+	touch templates/$2/index.html
+	cd ..
+	cd ..
+	open -a "Sublime Text" ./
+	echo "### OVERVIEW OF FOLDER STRUCTURE"
+	echo "# One big project folder"
+	echo "# apps folder"
+	echo "	# templates folder"
+	echo "	# urls.py (the app urls.py)"
+	echo "	# views.py"
+	echo "# project management folder"
+	echo "	# settings.py"
+	echo "	# urls.py (a second different urls.py)"
+}
+
+function mcd () {
+    mkdir -p $1
+    cd $1
+}
+
+alias subl='open -a "Sublime Text" ./$1'
+alias ..='cd ..'
+alias cd..='cd ..'
+alias claer='clear'
+alias clar='clear'
+alias cler='clear'
+alias fhere='find . -name '
+alias ll='ls -lhA'
+alias ls='ls -CF'
+alias sl='ls'
