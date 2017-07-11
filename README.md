@@ -1,6 +1,5 @@
 # HOW-TO
 
-If you have any comments or questions I'd love to hear them!  
 I will be adding new notes and "how-to" guides so watch this repository if you find my guides useful.
 
 CONTENT:
