@@ -172,7 +172,86 @@
 		// This can be repeated on other views by embeding in the navigation controller
 		// For more see sections 3 and 4 on segues and custom classes
 
+////////////////////////////////
+// 8) Protocols and Delegates //
+////////////////////////////////
+	/* 	Protocols are sets of rules our delegates must conform to in order to work with certain types of objects
+		Delegates are pointers from one object to another, so we can call on specific methods to pass data
+	*/
+	// To setup a protocol, create a controller for your view:
+		File
+			New
+				Project
+					// Give the project a relevant name (below example for adding to a table):
+					"AddItemTableViewController"
+		// You will need to connect this new file to your view:
+			click() on the Table View Controller // the yellow-circle
+				// In the utility section, select:
+					Class: AddItemTableViewController
+		// You can then link your buttons (below are some examples)
+			// Cancel button:
+				CTRL+click() and drag() from the cancel button to the view controller
+					// Give settings:
+						Name: cancelButtonPressed
+						Connection: Action
+						Type: UIBarButtonItem
+				// After you have the linkage, you need to setup the cancel function
+					// In order to cancel the view, you must call it from a different view!
+						// Make a new file:
+							File
+								New
+									File
+										// Pick a blank swift file and give it a name
+											CancelButtonDelegate.swift
+						// Inside the new file you need to setup the protocol, example:
+							protocol CancelButtonDelegate: class {
+								func cancelButtonPressed(by controller: UIViewController)
+							}
+						// Make sure you import the UIKit
+							import UIKit
+				// Inside the AddItemTableViewController, create a delagate var:
+					weak var delegate: CancelButtonDelegate?
+					// Also inside the AddItemTableViewController
+						// Inside of the cancel button function:
+					delegate?.cancelButtonPressed(by: self)
+						// This will run your function which we will setup in the root view controller
+				// Inside the root view controller (usually called ViewController.swift) setup the function
+					// The root view controller will be the delegate
+					// Use the prepareForSegue function:
+						override func prepare(for segue: UIStoryboardSegue, sender: Any?){
+							let navigationController = segue.destination as! UINavigationController
+							let AddItemTableViewController = navigationController.topViewController as! AddItemTableViewController
+							AddItemTableViewController.delegate = self
+						}
+			// Save button:
 
+	// Sample protocol:
+		protocol UITableViewDataSource {
+    		func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+    		func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
+		}
+		// Any class that follows this protocol must include these functions
+			// Example:
+				extension ViewController: UITableViewDataSource {
+					func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {        
+						// Code goes here
+					}
+					func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {        
+						// Code goes here
+					}
+				}
+				extension ViewController: UITableViewDelegate {
+				}
+
+
+
+///////////////////
+// 9) 
+//////////////////
+
+///////////////////
+// 10) 
+//////////////////
 
 
 
@@ -196,6 +275,7 @@
 		Move from top to bottom and left to right when setting the auto layout for elements in your view
 		You must always set both vertical and horizontal alignment!
 		Elements are often set in relation to other elements, try other devices/orientations to see how it looks!
+		You can also set the width and height of an element, not just the position!
 
 //////////////
 // C) Views //
