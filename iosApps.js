@@ -243,18 +243,196 @@
 				extension ViewController: UITableViewDelegate {
 				}
 
-
+//////////////////////////
+// 9) Unwinding a segue //
+//////////////////////////
+	// To unwind a segue (from view B to view A, where A is the first view and B is the second):
+		// First you need to add this line in view A:
+			@IBAction func unwindToWhatever(segue: UIStoryboardSegue) {}
+			// make the "unwindToWhatever something relevant"
+				CTRL+click() on the button and drag() it to the exit icon (orange button)
+					Select the "unwindToWhatever"
+					// You then have to click on the unwind segue and give it an identifier
+						Identifier: "unwindToWhatever"
+						// In file view B, to unwind:
+							self.performSegue(withIdentifier: "unwindToWhatever", sender: self)
 
 ///////////////////
-// 9) 
-//////////////////
-
+// 10) Core Data //
 ///////////////////
-// 10) 
-//////////////////
+	/* For an iOS application to use a database, it relies on a Cocoa API known as  Core Data. 
+		For those of you familiar with SQL, you probably want to separate the concept of "database" 
+		into two kinds: There are relational databases, which is what you're probably used to, and 
+		object databases, which is what Core Data provides. */
+	/* In all of your future projects where you will use Core Data you will check the box when 
+		creating the project and you won't have to do this. */
+	/* - */
+	// Importing Core Data is easy, go into this file:
+		AppDelegate.swift
+			// Add this line:
+				import CoreData
+	// Next open a new file:
+		File
+			New
+				File
+					// select:
+					Core Data
+						// add:
+						New Data Model 
+							// Will create a file like "YourDataModelName.xcdatamodeld"
+	// Back in the AppleDelegate.swift file, add the below at the end of the file (inside the last backet):
+		// MARK: - Core Data stack
+	    lazy var persistentContainer: NSPersistentContainer = {
+	        /*
+	         The persistent container for the application. This implementation
+	         creates and returns a container, having loaded the store for the
+	         application to it. This property is optional since there are legitimate
+	         error conditions that could cause the creation of the store to fail.
+	        */
+	        let container = NSPersistentContainer(name: "BucketList")
+	        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+	            if let error = error as NSError? {
+	                // Replace this implementation with code to handle the error appropriately.
+	                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+	                /*
+	                 Typical reasons for an error here include:
+	                 * The parent directory does not exist, cannot be created, or disallows writing.
+	                 * The persistent store is not accessible, due to permissions or data protection when the device is locked.
+	                 * The device is out of space.
+	                 * The store could not be migrated to the current model version.
+	                 Check the error message to determine what the actual problem was.
+	                 */
+	                fatalError("Unresolved error \(error), \(error.userInfo)")"
+	            }
+	        })
+	        return container
+	    }()
+	    // MARK: - Core Data Saving support
+	    func saveContext () {
+	        let context = persistentContainer.viewContext
+	        if context.hasChanges {
+	            do {
+	                try context.save()
+	            } catch {
+	                // Replace this implementation with code to handle the error appropriately.
+	                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+	                let nserror = error as NSError
+	                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+	            }
+	        }
+	    }
+	// Add inside of the "applicationWillTerminate(application: UIApplication)" method of AppDelegate:
+		// You should have this method already in your AppDelegate.swift file. Only add the line inside.
+		func applicationWillTerminate(application: UIApplication) {
+		/* ------ ADD THE LINE BELOW ------ */
+		        self.saveContext() // ADD THIS LINE
+		    }
+
+///////////////////////////////////
+// 10.1) Core Data CRUD Commands //
+///////////////////////////////////
+	// CRUD Basics
+		// Managed Objects
+			let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+		// Saving
+			do{
+				try context.save()
+			catch{
+				print(error)
+			}
+		// Create
+			let newThing = Thing(context: context)
+			newThing.property = "value"
+		// Read (Fetch)
+			let thingRequest:NSFetchRequest<Thing> = Thing.fetchRequest()
+			do { let fetchedThings = try context.fetch(thingRequest) }
+			catch { print(error) }
+		// Update
+			someManagedObject.property = "newValue"
+			// after updating, save it!
+			do { try context.save() }
+			catch { print(error) }
+		// Delete
+			context.delete(someManagedObject)
+	// Example CRUD:
+		// To enable you to use core data, you need to setup what you want in NSManagedObject:
+			let managedObjectContext = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+		// Create a new entity:
+			let thing = NSEntityDescription.insertNewObject(forEntityName: "OurCustomEntityName", into: managedObjectContext) as! OurCustomEntityName
+		// Set attributes of an entity:
+			thing.coolTextAttribute = "Some Totally Cool Text"
+		// Commit changes using the managedObjectContext:
+			if managedObjectContext.hasChanges {
+				do {
+					try managedObjectContext.save()
+					print("Success")
+				} catch {
+					print("\(error)")
+				}
+			}
+		// Tell Core Data that we want to fetch items:
+			let itemRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "AwesomeEntity")
+		// Iterate through records:
+			do {
+				// get the results by executing the fetch request we made earlier
+				let results = try managedObjectContext.fetch(itemRequest)
+				// downcast the results as an array of AwesomeEntity objects
+				items = results as! [AwesomeEntity]
+				// print the details of each item
+				for item in items {
+					print("\(item.coolTextAttribute)")
+				}
+			} catch {
+				// print the error if it is caught (Swift automatically saves the error in "error")
+				print("\(error)")
+			}
+		// Store the items in an array:
+			var items = [AwesomeEntity]()
+		// Fetch all items on page load, and save into data source:
+			override func viewDidLoad() {
+				super.viewDidLoad()
+				// Do any additional setup after loading the view, typically from a nib.
+				let userRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "AwesomeEntity")
+				do {
+					let results = try managedObjectContext.fetch(userRequest)
+					items = results as! [AwesomeEntity]
+				} catch {
+					print("\(error)")
+				}
+			}
+		// Set text of cell with item text:
+			cell.textLabel?.text = items[indexPath.row].coolTextAttribute
+		// Keep in mind variable types!
 
 
+////////////////////////////
+// 11) API Calls and JSON //
+////////////////////////////
+	// Grand Central Dispatch
+		/* GCD is a C API that interfaces with the threads on your computer to manage processes. 
+		The GCD manages queues of tasks to run where each of the queues runs concurrently (at the same time) 
+		and each of the tasks within a queue runs synchronously. In iOS by default, the GCD has 4 queues 
+		that it manages with one completely dedicated to UI related tasks. 
 
+		Behind the scenes, iOS does everything it can to make the user experience of any application the 
+		best possible. Because of this, it keeps all UI related tasks on one queue and switches to the other
+		queues for UI unrelated tasks such as HTTP requests! 
+
+		In order to make our application faster, all we need to do is make sure that the actual 
+		tableView.reloadData() function is run on the main queue that runs the UI. Conveniently enough iOS 
+		calls this queue the "main queue". */
+			// Remember that all UI related tasks and only UI related tasks belong in the main queue. 
+			// Typically requests will look like:
+				let url = URL(string: "http://www.some-api-url.com")
+				let session = URLSession.shared
+				let task = session.dataTask(with: url!, completionHandler: {
+					data, response, error in
+					// Do something here with the data from the response
+					DispatchQueue.main.async {
+						// Do something here to update the UI
+					}
+				})
+				task.resume()
 
 
 //////////////
@@ -297,6 +475,178 @@
 ////////////////////
 	// Controllers are files which interact with the views and render the data/images/actions
 		// Written in Swift
+
+/////////////////////////
+// E) Data Persistence //
+/////////////////////////
+	// There are different ways to store data in Swift:
+		// NSUserDefaults
+			Very easy to use, but generally reserved for small pieces of data 
+			like settings and user preferences. Should not be used for storing 
+			any core data for your application. Data is stored on the device.
+		// NSCoding
+			A method of persisting data where you encode data and save it in a 
+			file. Gives great control over how the data is structured, but may 
+			not be the best option when dealing with relational data. Data is 
+			stored on the device.
+		// Core Data
+			An iOS framework that uses an object-oriented style for storing and
+			 modeling data. A robust and relatively easy solution to implement 
+			 for larger data sets and relational data. Data is stored on the device.
+		// Back-end API Server
+			Using the full force of a back-end API server allows one to have full 
+			control over their database and use any database (MySQL, MongoDB, 
+			PostgreSQL, etc.). Relies on an internet connection. Data is 
+			not stored on the device.
+
+///////////////////
+// F) Satori API //
+///////////////////
+	// Example (from Satori website, quickstart.html file):
+		<!DOCTYPE html>
+		<html>
+		  <head>
+		    <meta charset="UTF-8">
+		    <title>Satori Quickstart</title>
+		    <style>
+		      p {
+		        margin: 10px 0px 5px 0px;
+		      }
+		      div#output {
+		        padding: 6px;
+		        width: 800px;
+		        height: 500px;
+		        border: 1px solid #ccc;
+		        border-radius: 3px;
+		        font-size: small;
+		        overflow-y: scroll;
+		      }
+		      div#output > div {
+		        padding: 4px 0;
+		      }
+		    </style>
+		    <script src="https://satori-a.akamaihd.net/satori-rtm-sdk/v1.0.2/sdk.min.js"></script>
+		  </head>
+		  <body>
+		    <p>Output:</p>
+		    <div id="output" />
+
+		    <script type="text/javascript">
+		      var endpoint = "YOUR_ENDPOINT_LINK";
+		      var appkey = "YOUR_APP_KEY";
+		      // Role and role secret are optional: replace only if you need to authenticate.
+		      var role = "YOUR_ROLE";
+		      var roleSecret = "YOUR_SECRET";
+		      var channelName = "CHANNEL_NAME";
+
+		      function showText(text) {
+		        var view = document.getElementById("output");
+		        var record = "<div>" + text + "</div>";
+		        view.innerHTML = record + view.innerHTML;
+		      }
+
+		      // Check if the role is set to authenticate or not
+		      var shouldAuthenticate = "YOUR_ROLE" != role;
+		      var authProvider;
+		      if (shouldAuthenticate) {
+		         authProvider = RTM.roleSecretAuthProvider(role, roleSecret);
+		      }
+
+		      var client = new RTM(endpoint, appkey, { authProvider: authProvider });
+
+		      // Hook up to client connectivity state transitions
+		      client.on("enter-connected", function () {
+		        showText("Connected to Satori RTM!");
+		      });
+		      client.on("leave-connected", function () {
+		        showText("Disconnected from Satori RTM");
+		      });
+		      client.on("error", function (error) {
+		        var reason;
+		        if (error.body) {
+		          reason = error.body.error + " - " + error.body.reason;
+		        } else {
+		          reason = "unknown reason";
+		        }
+		        showText("RTM client failed: " + reason);
+		      });
+
+		      client.start();
+
+		      // Show information about the client configuration
+		      var configInfo = "RTM client config:<br />";
+		      configInfo += "&nbsp;&nbsp;endpoint = '" + endpoint + "'<br />";
+		      configInfo += "&nbsp;&nbsp;appkey = '" + appkey + "'<br />";
+		      configInfo += "&nbsp;&nbsp;authenticate? = " + shouldAuthenticate;
+		      if (shouldAuthenticate) {
+		        configInfo += " (as " + role + ")";
+		      }
+		      showText(configInfo);
+
+		      // At this point, the client may not yet be connected to Satori RTM.
+		      // The SDK internally creates a subscription object and will subscribe
+		      // once the client connects.
+		      var subscription = client.subscribe(channelName, RTM.SubscriptionMode.SIMPLE);
+		      subscription.on("enter-subscribed", function() {
+		        // When subscription is established (confirmed by Satori RTM).
+		        showText("Subscribed to the channel: " + channelName);
+		      });
+		      subscription.on("rtm/subscribe/error", function(pdu) {
+		        // When a subscribe error occurs.
+		        showText("Failed to subscribe: " + pdu.body.error + " - " + pdu.body.reason);
+		      });
+		      subscription.on("rtm/subscription/data", function(pdu) {
+		        // Messages arrive in an array.
+		        pdu.body.messages.forEach(function(msg) {
+		          showText("Animal is received: " + JSON.stringify(msg));
+		        });
+		      });
+
+		      var publishLoop  = function() {
+		        // At this point, the client may not yet be connected to Satori RTM.
+		        // If client is not connected then skip publishing.
+		        if (client.isConnected()) {
+		          var lat = 34.134358 + (Math.random() / 100);
+		          var lon = -118.321506 + (Math.random() / 100);
+		          var animal = {
+		            who: "zebra",
+		            where: [lat, lon]
+		          };
+		          client.publish(channelName, animal, function(pdu) {
+		            if (pdu.action.endsWith("/ok")) {
+		              // Publish is confirmed by Satori RTM.
+		              showText("Animal is published: " + JSON.stringify(animal));
+		            } else {
+		              showText("Publish request failed: " + pdu.body.error + " - " + pdu.body.reason);
+		            }
+		          });
+		        }
+		      }
+		      setInterval(publishLoop, 2000);
+		    </script>
+		  </body>
+		</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
