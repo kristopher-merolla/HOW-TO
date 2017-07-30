@@ -9,6 +9,7 @@
 	// navigate in terminal to directory where you want to save your project, enter:
 		ng new AngularSample --routing
 			// When integrating with Express, call the application "public" and create inside express app
+			// Create express app first!  Go to step 8...
 				ng new public --routing
 			// the "--routing" is be needed for app to use routes, if you do not then omit it
 	// to create a component, cd into the AngularSample directory //
