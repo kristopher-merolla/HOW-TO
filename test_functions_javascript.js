@@ -97,11 +97,24 @@ function shuffleArray(arr) {
 }
 
 // Check if an input string contains a word
+// Returns a boolean if word found and the count of times found
 function doesStringContainWord(inputString,word) {
-	if ((typeof inputString == "string") && (typeof inputString == typeof word)) {
+	var wordString;
+	// check if input was given, and then force it as a string
+	if (typeof word != "undefined") {
+		if (typeof word != "string") {
+			wordString = String(word);
+		}
+	} else { // if word IS undefined
+		console.log("inputs are: inputString: string, word:any");
+		return [false,0];
+	}
+	// If we get this far, all is well, check if inputString is a string
+	if (typeof inputString == "string") {
+		var wordCount = 0; // start a count of times the word was found
 		// grab lower case versions of the inputString and word
 		let lowInputString = inputString.toLowerCase();
-		let lowWord = word.toLowerCase();
+		let lowWord = wordString.toLowerCase();
 		let wordLength = lowWord.length;
 		for (var i = 0; i<inputString.length; i++) { // iterate through the inputString
 			if (lowInputString[i] == lowWord[0]) { // check if inputString character is start of word
@@ -113,18 +126,27 @@ function doesStringContainWord(inputString,word) {
 				}
 				// once done with the for loop, check the check word against the lowWord
 				if (checkWord == lowWord) {
-					console.log("you found the word!");
-					return true;
+					wordCount ++;
 				}
 			}
 		}
-		console.log("you did not find the word!");
-		return false;
+		if (wordCount == 0) { // if you didn't find the word
+			console.log("did not find word!");
+			return [false,0];
+		} 
+		if (wordCount >= 1) { // you found the word!
+			console.log("found word",wordCount,"times!");
+			return [true,wordCount];
+		}
 	} else { // inputString or word not a string!
-		console.log("your inputs are not strings!");
-		return false;
+		console.log("inputs are: inputString: string, word:any");
+		return [false,0];
 	}
 }
+
+// Check if an input string contains a word from an array of words
+// Returns a boolean and an array of hit counts of each word
+
 
 /////////////////////////
 // Test function calls //
@@ -142,14 +164,10 @@ function doesStringContainWord(inputString,word) {
 // shuffleArray([1,2,3,4,5])
 // console.log(shuffleArray(someArray));
 
-let theString1 = "Hello, I was looking to celebrate the president, but Trump sucks!";
-let theString2 = "Did you know dinosaurs are super cool?!";
-let word1 = "dino";
+let theString1 = "Hello I7 was looking to celebrate the presucksident but Trump sucks Trump sucks sucks sucks!";
+let word1 = 7;
+let wordArray = ["trump","sucks"];
 
-doesStringContainWord(theString2,word1);
-doesStringContainWord();
-
-
-
+doesStringContainWord(theString1,word1);
 
 
