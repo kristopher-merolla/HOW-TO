@@ -146,7 +146,43 @@ function doesStringContainWord(inputString,word) {
 
 // Check if an input string contains a word from an array of words
 // Returns a boolean and an array of hit counts of each word
+function stringContainArrayWords(inputString, arr) {
+	console.log("input string and check each array element");
+}
 
+// Read an input string and return a dictionary of words with count of each word
+function makeWordDictionary(inputString) {
+	if (typeof inputString == "undefined") {
+		return false;
+	}
+	var theString;
+	var outputDict = {};
+	if (typeof inputString != "string") {
+		theString = String(inputString);
+	}
+	theString = inputString.toLowerCase();
+	for (var i = 0; i<theString.length; i++) {
+		for (var j = i; j<theString.length; j++) {
+			var word;
+			if (theString[j] == " ") {
+				i = j;
+				for (key in outputDict) {
+					if (word = key) {
+						outputDict.key += 1;
+						break;
+					}
+				}
+				outputDict.word = 1;
+				break;
+			} else {
+				word += theString[j];
+			}
+		}
+	}
+	return outputDict;
+}
+
+console.log(makeWordDictionary("hello and and hello and I"));
 
 /////////////////////////
 // Test function calls //
@@ -163,11 +199,6 @@ function doesStringContainWord(inputString,word) {
 // console.log(checkArrayForPrime(someArray));
 // shuffleArray([1,2,3,4,5])
 // console.log(shuffleArray(someArray));
-
-let theString1 = "Hello I7 was looking to celebrate the presucksident but Trump sucks Trump sucks sucks sucks!";
-let word1 = 7;
-let wordArray = ["trump","sucks"];
-
-doesStringContainWord(theString1,word1);
+// doesStringContainWord(theString1,word1);
 
 
