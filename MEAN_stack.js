@@ -130,6 +130,14 @@
 			// to use these components, you guessed it, you need to add an import in your file:
 				import { mainComponent } from './main/main.component';
 				import { childComponent } from './child/child.component';
+			// Example routes file component:
+				import { MainComponent } from './main/main.component';
+
+				const routes: Routes = [
+				    { path: '', component: MainComponent },
+				    // catch all goes at the bottom!
+				    { path: '**', redirectTo: '/' }
+				];
 	// add a line to the component.ts file:
 		main.component.ts
 			import { Router, ActivatedRoute } from '@angular/router';
@@ -291,7 +299,7 @@
 													mkdir models
 														// add files:
 															cd models
-																touch product.js
+																touch models.js
 																cd ..
 																cd .. // back inside my-express-app dir
 
@@ -380,7 +388,7 @@
 				public/ // app directory
 				server/
 				server.js
-	// Within your angular directory, in the terminal enter:
+	// Within your angular directory (likey called: public), in the terminal enter:
 		ng build -w
 			// This will create a "dist" directory to hold the transpiled ts files as js
 			// The "-w" listens for saves, so when we update the app and save, the "dist" is updated
@@ -396,9 +404,25 @@
 				server.js
 	// Edit the server.js file to point to the "dist" directory as the static folder
 		server.js
-			app.use(express.static(path.join(__dirname, '/public/dist')));
+			app.use(express.static(path.join(__dirname, './public/dist')));
 				// if you did not rename your angular app to "public" the above route would be different
 					// just use "public" for your angular app directory! :)
+				// Basic server setup:
+					const express = require('express');
+					const path = require('path');
+					const app = express();
+					const bodyParser = require('body-parser');
+					const mongoose = require('./server/config/mongoose.js');
+
+					app.use(bodyParser.json());
+					app.use(express.static(path.join(__dirname, './public/dist')));
+
+					// ROUTES
+					var routes = require('./server/config/routes.js')(app);
+
+					app.listen(8000, function () {
+					    console.log('listening on port 8000');
+					})
 			// you should also add a "catch all" route to your routes file
 				my-express-app/
 					server/
@@ -410,6 +434,17 @@
 						app.get('*', (req, res, next)=>{
 							res.sendFile(path.resolve("./public/dist/index.html"));
 						});
+				// Basic routes setup:
+					var products = require('../controllers/products.js');
+					const path = require('path');
+
+					module.exports = function (app) {
+					    
+					    // "Catch All" route, put at bottom of other routes
+					    app.all("*", (req,res,next) => {
+					        res.sendfile(path.resolve("./public/dist/index.html"))
+					    })
+					}
 	// In your terminal in the express app directory (my-express-app) enter:
 		nodemon server.js
 			// this starts up our node server and keeps it running
@@ -527,6 +562,22 @@
 			// When you can see Mongo start up, close it (ctrl+c) and use pm2 so we can keep terminal up:
 				sudo pm2 start mongod
 
+
+/////////////////
+// Z) CSS Grid //
+/////////////////
+	// CSS grids are a great way to make a responsive website using only CSS (better than using float!)
+		// First, you need to add the meta tag in your HTML file for the site to be responsive
+			<meta name="viewport" content="width=device-width, initial-scale=1">
+				// With angular, this will be created by default within the index.html file
+		// In the styles.css file, add this global note to remove unneded space on the page
+			* {
+				margin: 0;
+				padding: 0;
+			}
+		// In your component file, create your container (div) and some components to go inside
+			<div class="grid"> ...
+		
 
 
 

@@ -182,7 +182,59 @@ function makeWordDictionary(inputString) {
 	return outputDict;
 }
 
-console.log(makeWordDictionary("hello and and hello and I"));
+// console.log(makeWordDictionary("hello and and hello and I"));
+
+// This is the question: 
+// Write a node.js function that takes as input:
+// current: an array of strings
+// seen: an array of (array of strings)
+
+// and returns:
+// newstrings: a subset of current, containing only those strings which are in current 
+// but NOT in seen newseen: an array of (array of strings) which is a modified version 
+// of seen such that a) the zeroth (array of strings) is removed, and the newstrings 
+// array is appended to the end
+
+// Example input:
+// var current = [ "xxx", "aaa", "yyy", "hij" ]
+// var seen = [ [ "aaa", "bbb" ], [ "ccc", "ddd", "eee", "fff" ], [ "ggg", "hij", "abc" ] ]
+
+// Example output:
+// newstrings: [ "xxx", "yyy" ]
+// newseen: [ [ "ccc", "ddd", "eee", "fff" ], [ "ggg", "hij", "abc" ], [ "xxx", "yyy" ] ]
+
+function currentStrings (cur,see) {
+	// create output variables
+	var newstrings = cur;
+	var newseen = see;
+	// step through the 'current' array of strings to remove those found in 'seen'
+	for (var i = 0; i < cur.length; i++) {
+		// step through the 'seen' array of arrays of strings and compare
+		for (var j = 0; j < see.length; j++) {
+			var found = false;
+			if (!found) {
+				// step through each of the inner arrays to compare
+				for (var k = 0; k < see[j].length; k++) {
+					if (see[j][k] == cur[i]) { // found match
+						newstrings.splice(i,1); // remove one element
+						found = true; // update found
+						break; // break out of 'for' loop
+					}
+				}
+			}
+			if (found) {
+				break;
+			}
+
+		}
+	}
+	// update the newseen with updated newstrings
+	newseen.splice(0,1);
+	newseen.push(newstrings);
+	// console log the output (typically you'd return newstrings and newseen, but console.log for test)
+	console.log("newstrings = ",newstrings);
+	console.log("newseen = ",newseen);
+}
 
 /////////////////////////
 // Test function calls //
@@ -200,5 +252,7 @@ console.log(makeWordDictionary("hello and and hello and I"));
 // shuffleArray([1,2,3,4,5])
 // console.log(shuffleArray(someArray));
 // doesStringContainWord(theString1,word1);
-
+// var current = [ "xxx", "aaa", "yyy", "hij" ]
+// var seen = [ [ "aaa", "bbb" ], [ "ccc", "ddd", "eee", "fff" ], [ "ggg", "hij", "abc" ] ]
+// currentStrings(current,seen);
 
